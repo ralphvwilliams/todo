@@ -151,8 +151,6 @@ export default {
     return {
       task: '',
       allTasks: [],
-      activeTasks: [],
-      completedTasks: [],
       state: 'all',
       day: false,
       dayImg: require('../assets/Oval-day.png'),
@@ -185,7 +183,6 @@ export default {
       taskObj.text = this.task;
       taskObj.box = require('../assets/Oval.png');
       this.allTasks.push(taskObj);
-      this.activeTasks.push(taskObj);
 
       this.task = '';
     },
@@ -199,43 +196,28 @@ export default {
           obj.box = this.dayChecked;
         }
         // obj.completed = true;
-        this.completedTasks.push(obj);
-        let index = this.activeTasks.indexOf(obj);
-        if (index > -1) {
-          this.activeTasks.splice(index, 1);
-        }
       } else {
         obj.box = require('../assets/Oval.png');
-        let index = this.completedTasks.indexOf(obj);
-        if (index > -1) {
-          this.completedTasks.splice(index, 1);
-        }
-        this.activeTasks.push(obj);
       }
     },
 
     clearCompleted() {
-      for (let i = 0; i < this.allTasks.length; i++) {
-        if (this.allTasks[i].completed) {
-          let index = i;
-          if (index > -1) {
-            this.allTasks.splice(index);
-          }
-        }
-      }
-      this.completedTasks.splice(0, this.completedTasks.length);
+      this.allTasks = this.allTasks.filter((task) => !task.completed);
     },
   },
 
   computed: {
     filteredTasks() {
-      if (this.state === 'all') {
-        return this.allTasks;
-      } else if (this.state === 'completed') {
-        return this.completedTasks;
-      } else {
-        return this.activeTasks;
-      }
+      const states = {
+        all: this.allTasks,
+        active: this.allTasks.filter((task) => !task.completed),
+        completed: this.allTasks.filter((task) => task.completed),
+      };
+      return states[this.state];
+    },
+
+    activeTasks() {
+      return this.allTasks.filter((task) => !task.completed);
     },
   },
 };
